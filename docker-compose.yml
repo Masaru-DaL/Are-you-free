@@ -12,10 +12,10 @@ services:
       DB_PASSWORD: password
       DB_HOSTNAME: mysql
       DB_PORT: 3306
-      DB_DBNAME: todolist
+      DB_DBNAME: schedule
     tty: true
     volumes:
-      - ./:/app/Are-you-free
+      - ./:/go/src/app
     ports:
       - "8000:8000"
     depends_on:
