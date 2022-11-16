@@ -15,7 +15,7 @@ services:
       DB_DBNAME: schedule
     tty: true
     volumes:
-      - ./:/go/src/app
+      - /:/go/src/app
     ports:
       - "8000:8000"
     depends_on:
@@ -27,7 +27,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: todolist
+      MYSQL_DATABASE: schedule
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
     volumes:
       - ./mysql/data:/var/lib/mysql
