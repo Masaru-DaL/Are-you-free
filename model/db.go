@@ -1,11 +1,37 @@
 package model
 
 import (
+	"database/sql"
 	"fmt"
 	"os"
 
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
+
+var db *gorm.DB
+
+/* DB接続とテーブルを作成する関数 */
+func DBConnection() *sql.DB {
+	// 関数GetDBConfigを実行し、戻り値をdsnと定義する
+	dsn := GetDBConfig()
+	// エラー型のerrを定義する
+	var err error
+	// dsnを使ってDBに接続する。戻り値をdbとerrに代入する
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic(fmt.Errorf("DB Error: %w", err))
+	}
+	// テーブルの作成
+	CreateTable(db)
+	// *gorm.DB型を *sql.DB型に変換する
+	sqlDB, err := db.DB()
+	if err != nil {
+		panic(fmt.Errorf("DB Error: %w", err))
+	}
+	// sqlDBを返す
+	return sqlDB
+}
 
 /* DBのdsnを取得する関数 */
 func GetDBConfig() string {
