@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  go_blog:
+  web:
     container_name: schedule
     build:
       context: ./build/app
