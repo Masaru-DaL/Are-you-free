@@ -8,13 +8,13 @@ import (
 
 type Schedule struct {
 	ID          string `json:"id"`
-	Year        int    `json:"Year"`
-	Month       int    `json:"Month"`
-	Day         int    `Json:"Day"`
-	StartHour   int    `json:"StartHour"`
-	StartMinute int    `json:"StartMinute"`
-	EndHour     int    `json:"EndHour"`
-	EndMinute   int    `json:"EndMinute"`
+	Year        int    `json:"year"`
+	Month       int    `json:"month"`
+	Day         int    `Json:"day"`
+	StartHour   int    `json:"starthour"`
+	StartMinute int    `json:"startminute"`
+	EndHour     int    `json:"endhour"`
+	EndMinute   int    `json:"endminute"`
 }
 
 type Schedules struct {

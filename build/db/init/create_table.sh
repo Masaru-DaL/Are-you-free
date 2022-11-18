@@ -1,10 +1,15 @@
 #!/bin/sh
 
 CMD_MYSQL="mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE}"
-$CMD_MYSQL -e "create table article (
+$CMD_MYSQL -e "create table schedule (
     id int(10)  AUTO_INCREMENT NOT NULL primary key,
-    title varchar(50) NOT NULL,
-    body varchar(1000)
+    year INTEGER NOT NULL,
+    month INTEGER NOT NULL,
+    day INTEGER NOT NULL,
+    starthour INTEGER NOT NULL,
+    startminute INTEGER NOT NULL,
+    endhour INTEGER NOT NULL,
+    endminute INTEGER NOT NULL
     );"
-$CMD_MYSQL -e  "insert into article values (1, '記事1', '記事1です。');"
-$CMD_MYSQL -e  "insert into article values (2, '記事2', '記事2です。');"
+$CMD_MYSQL -e  "insert into schedule values (1, 2022, 11, 18, 18, 00, 24, 00);"
+$CMD_MYSQL -e  "insert into schedule values (1, 2022, 11, 20, 10, 00, 12, 00);"
