@@ -27,6 +27,7 @@ func main() {
 		return c.String(http.StatusCreated, "Hello, World!!")
 	})
 	e.GET("/schedules", controllers.GetSchedules)
+	e.POST("/create", controllers.PostScheduleHandler)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
