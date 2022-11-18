@@ -11,6 +11,11 @@ import (
 func main() {
 	e := echo.New()
 
+	/*
+		Logger: リクエスト単位のログを出力する
+		Recover: 予期せぬpanicを起こしてもサーバを落とさない
+		CORS: アクセスを許可するオリジン(デフォルト)とメソッドの設定
+	*/
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{

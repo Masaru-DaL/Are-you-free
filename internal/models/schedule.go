@@ -2,32 +2,32 @@ package models
 
 import (
 	"Are-you-free/internal/db"
-	"database/sql"
 	"fmt"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type Schedule struct {
-	ID          string `json:"id"`
-	Year        int    `json:"year"`
-	Month       int    `json:"month"`
-	Day         int    `Json:"day"`
-	StartHour   int    `json:"starthour"`
-	StartMinute int    `json:"startminute"`
-	EndHour     int    `json:"endhour"`
-	EndMinute   int    `json:"endminute"`
+	ID          int `json:"id"`
+	Year        int `json:"year"`
+	Month       int `json:"month"`
+	Day         int `Json:"day"`
+	StartHour   int `json:"starthour"`
+	StartMinute int `json:"startminute"`
+	EndHour     int `json:"endhour"`
+	EndMinute   int `json:"endminute"`
 }
 
 type Schedules struct {
 	Schedules []Schedule `json:"Schedule"`
 }
 
-var con *sql.DB
-
 func GetSchedule() Schedules {
 	con := db.CreateConnection()
 	// db.CreateConnection()
 	sqlStatement := "SELECT id, Year, Month, Day, StartHour, StartMinute, EndHour, EndMinute FROM schedule order by id"
 
+	// .Query: レコードの取得
 	rows, err := con.Query(sqlStatement)
 	fmt.Println(rows)
 	fmt.Println(err)
@@ -38,9 +38,10 @@ func GetSchedule() Schedules {
 	defer rows.Close()
 	result := Schedules{}
 
+	// .Next: 各レコードに対して操作する
 	for rows.Next() {
 		schedule := Schedule{}
-
+		// .Scan: 引数に渡したポインタにレコードの内容を読み込ませる
 		err2 := rows.Scan(&schedule.ID, &schedule.Year, &schedule.Month, &schedule.Day, &schedule.StartHour, &schedule.StartMinute, &schedule.EndHour, &schedule.EndMinute)
 
 		// エラーが発生した場合、終了する

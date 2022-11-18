@@ -10,6 +10,7 @@ import (
 
 /* Create MySQL Connection*/
 func CreateConnection() *sql.DB {
+	// docker-compose.ymlの環境変数の読み込みなど
 	user := os.Getenv("MYSQL_USER")
 	pw := os.Getenv("MYSQL_PASSWORD")
 	db_name := os.Getenv("MYSQL_DATABASE")
