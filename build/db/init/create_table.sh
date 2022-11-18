@@ -12,4 +12,4 @@ $CMD_MYSQL -e "create table schedule (
     endminute INTEGER NOT NULL
     );"
 $CMD_MYSQL -e  "insert into schedule values (1, 2022, 11, 18, 18, 00, 24, 00);"
-$CMD_MYSQL -e  "insert into schedule values (1, 2022, 11, 20, 10, 00, 12, 00);"
+$CMD_MYSQL -e  "insert into schedule values (2, 2022, 11, 20, 10, 00, 12, 00);"
