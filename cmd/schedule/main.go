@@ -2,6 +2,7 @@ package main
 
 import (
 	"Are-you-free/internal/controllers"
+	"Are-you-free/internal/models"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -27,7 +28,7 @@ func main() {
 		return c.String(http.StatusCreated, "Hello, World!!")
 	})
 	e.GET("/schedules", controllers.GetSchedules)
-	e.POST("/create", controllers.PostScheduleHandler)
+	e.POST("/create", models.PostSchedule)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
