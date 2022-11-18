@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  web:
+    container_name: schedule
+    build:
+      context: ./build/app
+      dockerfile: Dockerfile
+    tty: true
+    ports:
+      - 8080:8080
+    env_file:
+      - ./build/db/.env
+    depends_on:
+      - db
+    volumes:
+      - type: bind
+        source: .
+        target: /go/app
+    networks:
+      - golang_app_network
+
+  db:
+    container_name: db
+    build:
+      context: ./build/db
+      dockerfile: Dockerfile
+    tty: true
+    platform: linux/amd64
+    ports:
+      - 3306:3306
+    env_file:
+      - ./build/db/.env
+    volumes:
+      - type: volume
+        source: mysql_data
+        target: /var/lib/mysql
+      - type: bind
+        source: ./build/db/init
+        target: /docker-entrypoint-initdb.d
+    networks:
+      - golang_app_network
+
+volumes:
+  mysql_data:
+    name: mysql_volume
+
+networks:
+  golang_app_network:
+    external: true
