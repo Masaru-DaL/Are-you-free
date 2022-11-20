@@ -29,6 +29,7 @@ func main() {
 	})
 	e.GET("/schedules", controllers.GetSchedules)
 	e.POST("/create", models.PostSchedule)
+	e.PUT("/put", models.PutSchedule)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
