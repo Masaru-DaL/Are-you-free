@@ -81,3 +81,23 @@ func PostSchedule(c echo.Context) error {
 
 	return c.JSON(http.StatusCreated, sch.ID)
 }
+
+func PutSchedule(c echo.Context) error {
+	con := db.CreateConnection()
+	sch := new(Schedule)
+	if err := c.Bind(sch); err != nil {
+		return err
+	}
+	sqlStatement := "UPDATE schedules SET year=?, month=?, day=?, starthour=?, startminute=?, endhour=?, endminute=? WHERE id=?"
+
+	res, err := con.Query(sqlStatement, sch.Year, sch.Month, sch.Day, sch.StartHour, sch.StartMinute, sch.EndHour, sch.EndMinute, sch.ID)
+
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(res)
+		return c.JSON(http.StatusCreated, sch)
+	}
+
+	return c.JSON(http.StatusOK, sch.ID)
+}
