@@ -108,3 +108,22 @@ func PutSchedule(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, sch.ID)
 }
+
+func DeleteSchedule(c echo.Context) error {
+	con := db.CreateConnection()
+	request_id := c.Param("id")
+	sqlStatement := "DELETE FROM schedule where id = ?"
+	stmt, err := con.Prepare(sqlStatement)
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	defer stmt.Close()
+
+	result, err2 := stmt.Exec(request_id)
+	if err2 != nil {
+		panic(err2)
+	}
+	fmt.Println(result.RowsAffected())
+	return c.JSON(http.StatusOK, "Deleted")
+}
