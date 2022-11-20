@@ -88,14 +88,21 @@ func PutSchedule(c echo.Context) error {
 	if err := c.Bind(sch); err != nil {
 		return err
 	}
-	sqlStatement := "UPDATE schedules SET year=?, month=?, day=?, starthour=?, startminute=?, endhour=?, endminute=? WHERE id=?"
 
-	res, err := con.Query(sqlStatement, sch.Year, sch.Month, sch.Day, sch.StartHour, sch.StartMinute, sch.EndHour, sch.EndMinute, sch.ID)
+	sqlStatement := "UPDATE schedule SET year=?, month=?, day=?, starthour=?, startminute=?, endhour=?, endminute=? WHERE id=?"
+	stmt, err := con.Prepare(sqlStatement)
+
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	defer stmt.Close()
+
+	result, err := stmt.Exec(sch.Year, sch.Month, sch.Day, sch.StartHour, sch.StartMinute, sch.EndHour, sch.EndMinute, sch.ID)
 
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		fmt.Println(res)
+		fmt.Println(result)
 		return c.JSON(http.StatusCreated, sch)
 	}
 
