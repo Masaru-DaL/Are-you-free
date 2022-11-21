@@ -3,8 +3,10 @@ package models
 import (
 	"Are-you-free/internal/db"
 	"fmt"
+	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/labstack/echo/v4"
 )
 
 type Schedule struct {
@@ -52,4 +54,76 @@ func GetSchedule() Schedules {
 	}
 	return result
 
+}
+
+func PostSchedule(c echo.Context) error {
+	con := db.CreateConnection()
+	sch := new(Schedule)
+	if err := c.Bind(sch); err != nil {
+		return err
+	}
+
+	sqlStatement := "INSERT INTO schedule(id, year, month, day, starthour, startminute, endhour, endminute) VALUES(?, ?, ?, ?, ?, ?, ?, ?)"
+	stmt, err := con.Prepare(sqlStatement)
+
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	defer stmt.Close()
+
+	result, err2 := stmt.Exec(sch.ID, sch.Year, sch.Month, sch.Day, sch.StartHour, sch.StartMinute, sch.EndHour, sch.EndMinute)
+
+	// エラーが発生したら終了する
+	if err2 != nil {
+		panic(err2)
+	}
+	fmt.Println(result.LastInsertId())
+
+	return c.JSON(http.StatusCreated, sch.ID)
+}
+
+func PutSchedule(c echo.Context) error {
+	con := db.CreateConnection()
+	sch := new(Schedule)
+	if err := c.Bind(sch); err != nil {
+		return err
+	}
+
+	sqlStatement := "UPDATE schedule SET year=?, month=?, day=?, starthour=?, startminute=?, endhour=?, endminute=? WHERE id=?"
+	stmt, err := con.Prepare(sqlStatement)
+
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	defer stmt.Close()
+
+	result, err := stmt.Exec(sch.Year, sch.Month, sch.Day, sch.StartHour, sch.StartMinute, sch.EndHour, sch.EndMinute, sch.ID)
+
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(result)
+		return c.JSON(http.StatusCreated, sch)
+	}
+
+	return c.JSON(http.StatusOK, sch.ID)
+}
+
+func DeleteSchedule(c echo.Context) error {
+	con := db.CreateConnection()
+	request_id := c.Param("id")
+	sqlStatement := "DELETE FROM schedule where id = ?"
+	stmt, err := con.Prepare(sqlStatement)
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	defer stmt.Close()
+
+	result, err2 := stmt.Exec(request_id)
+	if err2 != nil {
+		panic(err2)
+	}
+	fmt.Println(result.RowsAffected())
+	return c.JSON(http.StatusOK, "Deleted")
 }
