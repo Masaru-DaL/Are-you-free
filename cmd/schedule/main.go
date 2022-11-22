@@ -3,11 +3,21 @@ package main
 import (
 	"Are-you-free/internal/controllers"
 	"Are-you-free/internal/models"
+	"html/template"
+	"io"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
+
+type Template struct {
+	templates *template.Template
+}
+
+func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+	return t.templates.ExecuteTemplate(w, name, data)
+}
 
 func main() {
 	e := echo.New()
@@ -31,6 +41,13 @@ func main() {
 	e.POST("/create", models.PostSchedule)
 	e.PUT("/put", models.PutSchedule)
 	e.DELETE("/schedule/delete/:id", models.DeleteSchedule)
+
+	// template
+	t := &Template{
+		templates: template.Must(template.ParseGlob("public/views/*.html")),
+	}
+	e.Renderer = t
+	e.GET("/hello", controllers.Hello)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

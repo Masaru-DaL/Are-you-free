@@ -16,3 +16,8 @@ func GetSchedules(c echo.Context) error {
 	println("Get All Schedules")
 	return c.JSON(http.StatusOK, result)
 }
+
+// template
+func Hello(c echo.Context) error {
+	return c.Render(http.StatusOK, "hello", "World")
+}
