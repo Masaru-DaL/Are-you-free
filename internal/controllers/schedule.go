@@ -14,7 +14,7 @@ func GetSchedules(c echo.Context) error {
 	// modelsに定義された関数を実行する
 	result := models.GetSchedule()
 	println("Get All Schedules")
-	return c.JSON(http.StatusOK, result)
+	return c.Render(http.StatusOK, "hello", result)
 }
 
 // template
