@@ -47,7 +47,7 @@ func main() {
 		templates: template.Must(template.ParseGlob("public/views/*.html")),
 	}
 	e.Renderer = t
-	e.GET("/hello", controllers.Hello)
+	e.GET("/hello", controllers.GetSchedules)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
