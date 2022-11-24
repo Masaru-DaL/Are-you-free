@@ -1,4 +1,31 @@
 {{define "hello"}}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>canvasで図形を描く</title>
+<script type="text/javascript">
+<!--
+function test() {
+  //描画コンテキストの取得
+  var canvas = document.getElementById('sample');
+  if (canvas.getContext) {
+    var context = canvas.getContext('2d');
+    //ここに具体的な描画内容を指定する
+    //開始点を決める
+    context.moveTo(15*({{index . "starthour"}}-6)*4, 10);
+    //終点を決める
+    context.lineTo(15*({{index . "endhour"}}-6)*4, 10);
+    //描画する
+    context.stroke();
+    context.fill();
+  }
+}
+//-->
+</script>
+</head>
+<body onLoad="test()">
+<h2>Canvasで図形を描く</h2>
 {{index . "title"}}
 {{index . "id"}}
 {{index . "year"}}
@@ -8,4 +35,9 @@
 {{index . "startminute"}}
 {{index . "endhour"}}
 {{index . "endminute"}}
+<canvas id="sample" width="1080" height="100" style="background-color:yellow;">
+図形を表示するには、canvasタグをサポートしたブラウザが必要です。
+</canvas>
+</body>
+</html>
 {{end}}
