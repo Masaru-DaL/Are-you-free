@@ -5,6 +5,7 @@ import (
 	"Are-you-free/internal/models"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -34,13 +35,19 @@ func MethodOverride(next echo.HandlerFunc) echo.HandlerFunc {
 
 func GetOneSchedule(c echo.Context) error {
 	con := db.CreateConnection()
-	sqlStatement := "SELECT id, Year, Month, Day, StartHour, StartMinute, EndHour, EndMinute FROM schedule order by id"
-	rows, err := con.Query(sqlStatement)
-	if err != nil {
-		fmt.Println(err)
-	}
+
+	schedule_id := c.Param("id")
+	strconv.Atoi(schedule_id)
+
+	sqlStatement := "SELECT id, Year, Month, Day, StartHour, StartMinute, EndHour, EndMinute FROM schedule WHERE id = ? LIMIT 1"
+
 	schedule := models.Schedule{}
-	defer rows.Close()
+
+	rows := con.QueryRow(sqlStatement, schedule_id)
+	err2 := rows.Scan(&schedule.ID, &schedule.Year, &schedule.Month, &schedule.Day, &schedule.StartHour, &schedule.StartMinute, &schedule.EndHour, &schedule.EndMinute)
+	if err2 != nil {
+		fmt.Println(err2)
+	}
 
 	return c.Render(http.StatusOK, "hello", map[string]interface{}{
 		"title":       "Get Schedule",
