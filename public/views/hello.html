@@ -1,1 +1,12 @@
-{{define "hello"}}Hello, {{.}}!{{end}}
+{{define "hello"}}Hello,
+{{ . }}
+{{index . "title"}}
+{{index . "id"}}
+{{index . "year"}}
+{{index . "month"}}
+{{index . "day"}}
+{{index . "starthour"}}
+{{index . "startminute"}}
+{{index . "endhour"}}
+{{index . "endminute"}}
+{{end}}

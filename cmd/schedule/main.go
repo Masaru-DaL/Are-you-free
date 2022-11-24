@@ -37,7 +37,7 @@ func main() {
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusCreated, "Hello, World!!")
 	})
-	e.GET("/schedules", controllers.GetSchedules)
+	// e.GET("/schedules", controllers.GetSchedules)
 	e.POST("/create", models.PostSchedule)
 	e.PUT("/put", models.PutSchedule)
 	e.DELETE("/schedule/delete/:id", models.DeleteSchedule)
@@ -47,7 +47,9 @@ func main() {
 		templates: template.Must(template.ParseGlob("public/views/*.html")),
 	}
 	e.Renderer = t
-	e.GET("/hello", controllers.GetSchedules)
+	e.Pre(controllers.MethodOverride)
+	e.GET("/index/:id", controllers.GetOneSchedule)
+	// e.GET("/hello", controllers.GetSchedules)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
