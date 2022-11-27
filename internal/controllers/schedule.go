@@ -62,6 +62,35 @@ func GetOneSchedule(c echo.Context) error {
 	})
 }
 
+func GetAllSchedules(c echo.Context) error {
+	con := db.CreateConnection()
+
+	sqlStatement := "SELECT ID, Year, Month, Day, StartHour, StartMinute, EndHour, EndMinute FROM schedule"
+
+	stmt, err := con.Prepare(sqlStatement)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	rows, err := stmt.Query()
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+
+	allSchedules := models.Schedules{}
+	for rows.Next() {
+		schedule := models.Schedule{}
+		err := rows.Scan(&schedule.ID, &schedule.Year, &schedule.Month, &schedule.Day, &schedule.StartHour, &schedule.StartMinute, &schedule.EndHour, &schedule.EndMinute)
+
+		if err != nil {
+			fmt.Println(err)
+		}
+		allSchedules.Schedules = append(allSchedules.Schedules, schedule)
+	}
+	return c.Render(http.StatusOK, "all-get-schedules", allSchedules)
+}
+
 // template
 // func Hello(c echo.Context) error {
 // 	data := c.QueryParam("id")
