@@ -13,12 +13,12 @@ import (
 /* メソッドはmain.goのハンドラとして使用する */
 
 /* 全てのスケジュールを取得する */
-// func GetSchedules(c echo.Context) error {
-// 	// modelsに定義された関数を実行する
-// 	result := models.GetSchedule()
-// 	println("Get All Schedules")
-// 	return c.Render(http.StatusOK, "hello", result)
-// }
+func GetSchedules(c echo.Context) error {
+	// modelsに定義された関数を実行する
+	result := models.GetSchedules()
+	println("Get All Schedules")
+	return c.Render(http.StatusOK, "get-all-schedules", result)
+}
 
 /* PUTやDELETEにも対応させるメソッド */
 func MethodOverride(next echo.HandlerFunc) echo.HandlerFunc {
@@ -62,34 +62,34 @@ func GetOneSchedule(c echo.Context) error {
 	})
 }
 
-func GetAllSchedules(c echo.Context) error {
-	con := db.CreateConnection()
+// func GetAllSchedules(c echo.Context) error {
+// 	con := db.CreateConnection()
 
-	sqlStatement := "SELECT ID, Year, Month, Day, StartHour, StartMinute, EndHour, EndMinute FROM schedule"
+// 	sqlStatement := "SELECT ID, Year, Month, Day, StartHour, StartMinute, EndHour, EndMinute FROM schedule"
 
-	stmt, err := con.Prepare(sqlStatement)
-	if err != nil {
-		fmt.Println(err)
-	}
+// 	stmt, err := con.Prepare(sqlStatement)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
 
-	rows, err := stmt.Query()
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer rows.Close()
+// 	rows, err := stmt.Query()
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+// 	defer rows.Close()
 
-	allSchedules := models.Schedules{}
-	for rows.Next() {
-		schedule := models.Schedule{}
-		err := rows.Scan(&schedule.ID, &schedule.Year, &schedule.Month, &schedule.Day, &schedule.StartHour, &schedule.StartMinute, &schedule.EndHour, &schedule.EndMinute)
+// 	allSchedules := models.Schedules{}
+// 	for rows.Next() {
+// 		schedule := models.Schedule{}
+// 		err := rows.Scan(&schedule.ID, &schedule.Year, &schedule.Month, &schedule.Day, &schedule.StartHour, &schedule.StartMinute, &schedule.EndHour, &schedule.EndMinute)
 
-		if err != nil {
-			fmt.Println(err)
-		}
-		allSchedules.Schedules = append(allSchedules.Schedules, schedule)
-	}
-	return c.Render(http.StatusOK, "all-get-schedules", allSchedules)
-}
+// 		if err != nil {
+// 			fmt.Println(err)
+// 		}
+// 		allSchedules.Schedules = append(allSchedules.Schedules, schedule)
+// 	}
+// 	return c.Render(http.StatusOK, "all-get-schedules", allSchedules)
+// }
 
 // template
 // func Hello(c echo.Context) error {
