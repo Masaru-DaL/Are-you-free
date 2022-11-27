@@ -43,12 +43,20 @@ func main() {
 	e.DELETE("/schedule/delete/:id", models.DeleteSchedule)
 
 	// template
+	// t := &Template{
+	// 	templates: template.Must(template.ParseGlob("public/views/*.html")),
+	// }
+	templateList, err := template.New("t").ParseGlob("public/views/*.html")
+	templateList.ParseGlob("public/view/*.html")
 	t := &Template{
-		templates: template.Must(template.ParseGlob("public/views/*.html")),
+		templates: template.Must(templateList, err),
 	}
 	e.Renderer = t
 	e.Pre(controllers.MethodOverride)
 	e.GET("/index/:id", controllers.GetOneSchedule)
+
+	e.GET("/index", controllers.GetSchedules)
+	// e.GET("/index", controllers.GetAllSchedules)
 	// e.GET("/hello", controllers.GetSchedules)
 
 	e.Logger.Fatal(e.Start(":8080"))
