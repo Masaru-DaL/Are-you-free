@@ -24,37 +24,37 @@ type Schedules struct {
 	Schedules []Schedule `json:"Schedule"`
 }
 
-func GetSchedules() Schedules {
-	con := db.CreateConnection()
-	// db.CreateConnection()
-	sqlStatement := "SELECT id, Year, Month, Day, StartHour, StartMinute, EndHour, EndMinute FROM schedule order by id"
+// func GetSchedules() Schedules {
+// 	con := db.CreateConnection()
+// 	// db.CreateConnection()
+// 	sqlStatement := "SELECT id, Year, Month, Day, StartHour, StartMinute, EndHour, EndMinute FROM schedule order by id"
 
-	// .Query: レコードの取得
-	rows, err := con.Query(sqlStatement)
-	fmt.Println(rows)
-	fmt.Println(err)
-	if err != nil {
-		fmt.Println(err)
-		// return c.JSON(http.StatusCreated, u);
-	}
-	defer rows.Close()
-	result := Schedules{}
+// 	// .Query: レコードの取得
+// 	rows, err := con.Query(sqlStatement)
+// 	fmt.Println(rows)
+// 	fmt.Println(err)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		// return c.JSON(http.StatusCreated, u);
+// 	}
+// 	defer rows.Close()
+// 	result := Schedules{}
 
-	// .Next: 各レコードに対して操作する
-	for rows.Next() {
-		schedule := Schedule{}
-		// .Scan: 引数に渡したポインタにレコードの内容を読み込ませる
-		err2 := rows.Scan(&schedule.ID, &schedule.Year, &schedule.Month, &schedule.Day, &schedule.StartHour, &schedule.StartMinute, &schedule.EndHour, &schedule.EndMinute)
+// 	// .Next: 各レコードに対して操作する
+// 	for rows.Next() {
+// 		schedule := Schedule{}
+// 		// .Scan: 引数に渡したポインタにレコードの内容を読み込ませる
+// 		err2 := rows.Scan(&schedule.ID, &schedule.Year, &schedule.Month, &schedule.Day, &schedule.StartHour, &schedule.StartMinute, &schedule.EndHour, &schedule.EndMinute)
 
-		// エラーが発生した場合、終了する
-		if err2 != nil {
-			fmt.Println(err2)
-		}
-		result.Schedules = append(result.Schedules, schedule)
-	}
-	return result
+// 		// エラーが発生した場合、終了する
+// 		if err2 != nil {
+// 			fmt.Println(err2)
+// 		}
+// 		result.Schedules = append(result.Schedules, schedule)
+// 	}
+// 	return result
 
-}
+// }
 
 func PostSchedule(c echo.Context) error {
 	con := db.CreateConnection()

@@ -13,12 +13,12 @@ import (
 /* メソッドはmain.goのハンドラとして使用する */
 
 /* 全てのスケジュールを取得する */
-func GetSchedules(c echo.Context) error {
-	// modelsに定義された関数を実行する
-	result := models.GetSchedules()
-	println("Get All Schedules")
-	return c.Render(http.StatusOK, "get-all-schedules", result)
-}
+// func GetSchedules(c echo.Context) error {
+// 	// modelsに定義された関数を実行する
+// 	result := models.GetSchedules()
+// 	println("Get All Schedules")
+// 	return c.Render(http.StatusOK, "get-all-schedules", result)
+// }
 
 /* PUTやDELETEにも対応させるメソッド */
 func MethodOverride(next echo.HandlerFunc) echo.HandlerFunc {
@@ -62,33 +62,83 @@ func GetOneSchedule(c echo.Context) error {
 	})
 }
 
+func GetAllSchedules(c echo.Context) error {
+	con := db.CreateConnection()
+
+	sqlStatement := "SELECT ID, Year, Month, Day, StartHour, StartMinute, EndHour, EndMinute FROM schedule"
+
+	// sqlStatement := "SELECT ID, Year, Month, Day, StartHour, StartMinute, EndHour, EndMinute FROM schedule where id = ?"
+
+	stmt, err := con.Prepare(sqlStatement)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// rows, err := stmt.Query(1)
+	rows, err := stmt.Query()
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+
+	schedules := []models.Schedule{}
+	for rows.Next() {
+		schedule := models.Schedule{}
+		err := rows.Scan(&schedule.ID, &schedule.Year, &schedule.Month, &schedule.Day, &schedule.StartHour, &schedule.StartMinute, &schedule.EndHour, &schedule.EndMinute)
+
+		if err != nil {
+			fmt.Println(err)
+		}
+		schedules = append(schedules, schedule)
+	}
+	// return c.Render(http.StatusOK, "all-get-schedules", allSchedules.Schedules)
+	return c.Render(http.StatusOK, "get-all-schedules", schedules)
+}
+
 // func GetAllSchedules(c echo.Context) error {
 // 	con := db.CreateConnection()
 
-// 	sqlStatement := "SELECT ID, Year, Month, Day, StartHour, StartMinute, EndHour, EndMinute FROM schedule"
-
+// 	sqlStatement := "SELECT ID, Year, Month, Day, StartHour, StartMinute, EndHour, EndMinute FROM schedule where id = ?"
 // 	stmt, err := con.Prepare(sqlStatement)
 // 	if err != nil {
 // 		fmt.Println(err)
 // 	}
+// 	defer stmt.Close()
 
-// 	rows, err := stmt.Query()
+// 	rows, err := stmt.Query(1)
 // 	if err != nil {
 // 		fmt.Println(err)
 // 	}
 // 	defer rows.Close()
 
-// 	allSchedules := models.Schedules{}
 // 	for rows.Next() {
-// 		schedule := models.Schedule{}
+// 		schedule := &models.Schedule{}
+
 // 		err := rows.Scan(&schedule.ID, &schedule.Year, &schedule.Month, &schedule.Day, &schedule.StartHour, &schedule.StartMinute, &schedule.EndHour, &schedule.EndMinute)
 
 // 		if err != nil {
 // 			fmt.Println(err)
 // 		}
-// 		allSchedules.Schedules = append(allSchedules.Schedules, schedule)
+// 		fmt.Println(schedule)
 // 	}
-// 	return c.Render(http.StatusOK, "all-get-schedules", allSchedules)
+
+// 	err = rows.Err()
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// }
+
+// 	return c.Render(http.StatusOK, "all-get-schedules", map[string]interface{}{
+// 		"title":       "Get Schedule",
+// 		"id":          schedule.ID,
+// 		"year":        schedule.Year,
+// 		"month":       schedule.Month,
+// 		"day":         schedule.Day,
+// 		"starthour":   schedule.StartHour,
+// 		"startminute": schedule.StartMinute,
+// 		"endhour":     schedule.EndHour,
+// 		"endminute":   schedule.EndMinute,
+// 	})
 // }
 
 // template

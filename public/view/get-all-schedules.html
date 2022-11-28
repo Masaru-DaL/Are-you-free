@@ -1,3 +1,6 @@
 {{define "get-all-schedules"}}
-{{ . }}
+{{range .}}
+{{.ID}}
+{{.EndHour}}
+{{end}}
 {{end}}

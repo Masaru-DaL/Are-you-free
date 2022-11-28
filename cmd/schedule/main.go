@@ -55,7 +55,7 @@ func main() {
 	e.Pre(controllers.MethodOverride)
 	e.GET("/index/:id", controllers.GetOneSchedule)
 
-	e.GET("/index", controllers.GetSchedules)
+	e.GET("/index", controllers.GetAllSchedules)
 	// e.GET("/index", controllers.GetAllSchedules)
 	// e.GET("/hello", controllers.GetSchedules)
 
