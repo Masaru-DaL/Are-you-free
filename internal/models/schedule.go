@@ -4,10 +4,24 @@ import (
 	"Are-you-free/internal/db"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo/v4"
 )
+
+/* PUTやDELETEにも対応させるメソッド */
+func MethodOverride(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		if c.Request().Method == "POST" {
+			method := c.Request().PostFormValue("_method")
+			if method == "PUT" || method == "PATCH" || method == "DELETE" {
+				c.Request().Method = method
+			}
+		}
+		return next(c)
+	}
+}
 
 type Schedule struct {
 	ID          int `json:"id"`
@@ -24,38 +38,70 @@ type Schedules struct {
 	Schedules []Schedule `json:"Schedule"`
 }
 
-// func GetSchedules() Schedules {
-// 	con := db.CreateConnection()
-// 	// db.CreateConnection()
-// 	sqlStatement := "SELECT id, Year, Month, Day, StartHour, StartMinute, EndHour, EndMinute FROM schedule order by id"
+/* 1件取得の関数 */
+func GetOneSchedule(c echo.Context) error {
+	con := db.CreateConnection()
 
-// 	// .Query: レコードの取得
-// 	rows, err := con.Query(sqlStatement)
-// 	fmt.Println(rows)
-// 	fmt.Println(err)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		// return c.JSON(http.StatusCreated, u);
-// 	}
-// 	defer rows.Close()
-// 	result := Schedules{}
+	schedule_id := c.Param("id")
+	strconv.Atoi(schedule_id)
 
-// 	// .Next: 各レコードに対して操作する
-// 	for rows.Next() {
-// 		schedule := Schedule{}
-// 		// .Scan: 引数に渡したポインタにレコードの内容を読み込ませる
-// 		err2 := rows.Scan(&schedule.ID, &schedule.Year, &schedule.Month, &schedule.Day, &schedule.StartHour, &schedule.StartMinute, &schedule.EndHour, &schedule.EndMinute)
+	sqlStatement := "SELECT id, Year, Month, Day, StartHour, StartMinute, EndHour, EndMinute FROM schedule WHERE id = ? LIMIT 1"
 
-// 		// エラーが発生した場合、終了する
-// 		if err2 != nil {
-// 			fmt.Println(err2)
-// 		}
-// 		result.Schedules = append(result.Schedules, schedule)
-// 	}
-// 	return result
+	schedule := Schedule{}
 
-// }
+	rows := con.QueryRow(sqlStatement, schedule_id)
+	err2 := rows.Scan(&schedule.ID, &schedule.Year, &schedule.Month, &schedule.Day, &schedule.StartHour, &schedule.StartMinute, &schedule.EndHour, &schedule.EndMinute)
+	if err2 != nil {
+		fmt.Println(err2)
+	}
 
+	return c.Render(http.StatusOK, "schedule", map[string]interface{}{
+		"title":       "Get Schedule",
+		"id":          schedule.ID,
+		"year":        schedule.Year,
+		"month":       schedule.Month,
+		"day":         schedule.Day,
+		"starthour":   schedule.StartHour,
+		"startminute": schedule.StartMinute,
+		"endhour":     schedule.EndHour,
+		"endminute":   schedule.EndMinute,
+	})
+}
+
+/* 全件取得の関数 */
+func GetAllSchedules(c echo.Context) error {
+	con := db.CreateConnection()
+
+	sqlStatement := "SELECT ID, Year, Month, Day, StartHour, StartMinute, EndHour, EndMinute FROM schedule"
+
+	// sqlStatement := "SELECT ID, Year, Month, Day, StartHour, StartMinute, EndHour, EndMinute FROM schedule where id = ?"
+
+	stmt, err := con.Prepare(sqlStatement)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// rows, err := stmt.Query(1)
+	rows, err := stmt.Query()
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+
+	schedules := Schedules{}
+	for rows.Next() {
+		schedule := Schedule{}
+		err := rows.Scan(&schedule.ID, &schedule.Year, &schedule.Month, &schedule.Day, &schedule.StartHour, &schedule.StartMinute, &schedule.EndHour, &schedule.EndMinute)
+
+		if err != nil {
+			fmt.Println(err)
+		}
+		schedules.Schedules = append(schedules.Schedules, schedule)
+	}
+	return c.Render(http.StatusOK, "schedules", schedules.Schedules)
+}
+
+/* POSTリクエスト */
 func PostSchedule(c echo.Context) error {
 	con := db.CreateConnection()
 	sch := new(Schedule)

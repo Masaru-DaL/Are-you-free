@@ -1,7 +1,6 @@
 package main
 
 import (
-	"Are-you-free/internal/controllers"
 	"Are-you-free/internal/models"
 	"html/template"
 	"io"
@@ -37,7 +36,6 @@ func main() {
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusCreated, "Hello, World!!")
 	})
-	// e.GET("/schedules", controllers.GetSchedules)
 	e.POST("/create", models.PostSchedule)
 	e.PUT("/put", models.PutSchedule)
 	e.DELETE("/schedule/delete/:id", models.DeleteSchedule)
@@ -52,12 +50,10 @@ func main() {
 		templates: template.Must(templateList, err),
 	}
 	e.Renderer = t
-	e.Pre(controllers.MethodOverride)
-	e.GET("/index/:id", controllers.GetOneSchedule)
+	e.Pre(models.MethodOverride)
 
-	e.GET("/index", controllers.GetAllSchedules)
-	// e.GET("/index", controllers.GetAllSchedules)
-	// e.GET("/hello", controllers.GetSchedules)
+	e.GET("/schedules", models.GetAllSchedules)
+	e.GET("/schedule/:id", models.GetOneSchedule)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
