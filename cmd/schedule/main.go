@@ -13,17 +13,7 @@ import (
 func main() {
 	e := echo.New()
 
-	/*
-		Logger: リクエスト単位のログを出力する
-		Recover: 予期せぬpanicを起こしてもサーバを落とさない
-		CORS: アクセスを許可するオリジン(デフォルト)とメソッドの設定
-	*/
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"*"},
-		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
-	}))
+	initMiddleware(e)
 	initRouting(e)
 
 	e.Logger.Fatal(e.Start(":8080"))
@@ -35,6 +25,20 @@ type Template struct {
 
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	return t.templates.ExecuteTemplate(w, name, data)
+}
+
+func initMiddleware(e *echo.Echo) {
+	/*
+		Logger: リクエスト単位のログを出力する
+		Recover: 予期せぬpanicを起こしてもサーバを落とさない
+		CORS: アクセスを許可するオリジン(デフォルト)とメソッドの設定
+	*/
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
+	}))
 }
 
 func initRouting(e *echo.Echo) {
