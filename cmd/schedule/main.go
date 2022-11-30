@@ -2,21 +2,13 @@ package main
 
 import (
 	"Are-you-free/internal/models"
-	"html/template"
 	"io"
 	"net/http"
+	"text/template"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
-
-type Template struct {
-	templates *template.Template
-}
-
-func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
-	return t.templates.ExecuteTemplate(w, name, data)
-}
 
 func main() {
 	e := echo.New()
@@ -32,7 +24,21 @@ func main() {
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
 	}))
+	initRouting(e)
 
+	e.Logger.Fatal(e.Start(":8080"))
+}
+
+type Template struct {
+	templates *template.Template
+}
+
+func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+	return t.templates.ExecuteTemplate(w, name, data)
+}
+
+func initRouting(e *echo.Echo) {
+	// html/template非対応
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusCreated, "Hello, World!!")
 	})
@@ -40,10 +46,14 @@ func main() {
 	e.PUT("/put", models.PutSchedule)
 	e.DELETE("/schedule/delete/:id", models.DeleteSchedule)
 
-	// template
-	// t := &Template{
-	// 	templates: template.Must(template.ParseGlob("public/views/*.html")),
-	// }
+	// html/template対応
+	initTemplate(e)
+	e.Pre(models.MethodOverride)
+	e.GET("/schedules", models.GetAllSchedules)
+	e.GET("/schedule/:id", models.GetOneSchedule)
+}
+
+func initTemplate(e *echo.Echo) {
 	templateList, err := template.New("t").ParseGlob("public/views/*.html")
 	templateList.ParseGlob("public/view/*.html")
 	t := &Template{
@@ -51,9 +61,4 @@ func main() {
 	}
 	e.Renderer = t
 	e.Pre(models.MethodOverride)
-
-	e.GET("/schedules", models.GetAllSchedules)
-	e.GET("/schedule/:id", models.GetOneSchedule)
-
-	e.Logger.Fatal(e.Start(":8080"))
 }
