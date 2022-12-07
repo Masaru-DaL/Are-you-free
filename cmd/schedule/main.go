@@ -1,13 +1,22 @@
 package main
 
 import (
-	"Are-you-free/internal/controllers"
 	"Are-you-free/internal/models"
+	"html/template"
+	"io"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
+
+type Template struct {
+	templates *template.Template
+}
+
+func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+	return t.templates.ExecuteTemplate(w, name, data)
+}
 
 func main() {
 	e := echo.New()
@@ -27,10 +36,24 @@ func main() {
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusCreated, "Hello, World!!")
 	})
-	e.GET("/schedules", controllers.GetSchedules)
 	e.POST("/create", models.PostSchedule)
 	e.PUT("/put", models.PutSchedule)
 	e.DELETE("/schedule/delete/:id", models.DeleteSchedule)
+
+	// template
+	// t := &Template{
+	// 	templates: template.Must(template.ParseGlob("public/views/*.html")),
+	// }
+	templateList, err := template.New("t").ParseGlob("public/views/*.html")
+	templateList.ParseGlob("public/view/*.html")
+	t := &Template{
+		templates: template.Must(templateList, err),
+	}
+	e.Renderer = t
+	e.Pre(models.MethodOverride)
+
+	e.GET("/schedules", models.GetAllSchedules)
+	e.GET("/schedule/:id", models.GetOneSchedule)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
