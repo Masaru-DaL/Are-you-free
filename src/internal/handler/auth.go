@@ -6,10 +6,14 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func HandleSignUp(c echo.Context) error {
-	return c.Render(http.StatusOK, "signup", "")
+func HandleMyPage(c echo.Context) error {
+	return c.Render(http.StatusOK, "mypage", map[string]interface{}{
+		"title": "MyPage",
+	})
 }
 
-func HandleMyPage(c echo.Context) error {
-	return c.Render(http.StatusOK, "mypage", "")
+func HandleSignUp(c echo.Context) error {
+	return c.Render(http.StatusOK, "signup", map[string]interface{}{
+		"title": "Login / SignUp Form",
+	})
 }
