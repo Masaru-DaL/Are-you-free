@@ -27,7 +27,7 @@ func InitRouting() *echo.Echo {
 	e.GET("/schedules", models.GetAllSchedules)
 	e.GET("/schedule/:id", models.GetOneSchedule)
 	e.GET("/signup", handler.HandleSignUp)
-	// e.GET("/mypage", handler.HandleMyPage)
+	e.GET("/mypage", handler.HandleMyPage)
 
 	return e
 }

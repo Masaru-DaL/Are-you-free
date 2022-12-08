@@ -1,23 +1,35 @@
 {{define "signup"}}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>HTML Sample</title>
-  <link rel="stylesheet" href="style.css">
-  <script type="text/javascript" src="sample.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-  <div class="header">Header領域</div>
-  <div class="main">
-    <h1>見出し</h1>
-    <p>コンテンツ</p>
-    <img src="img/sample1.jpg">
-  </div>
-  <div class="footer">
-    <span>Footer領域</span>
-    <a href="#">リンク</a>
-  </div>
+    <h2>Login</h2>
+    <form class="fetchForm">
+        <div>
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name">
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password">
+        </div>
+        <p><input type="button" name="button" class="btn" value="Login"></p>
+    </form>
+    <h2>Sign Up</h2>
+    <form method="POST" action="/user">
+        <div>
+            <label for="name">Name:</label>
+            <input type="text" id="name1" name="name">
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password1" name="password">
+        </div>
+        <p><input type="submit" name="submit" value="Sign Up"></p>
+    </form>
 </body>
 </html>
 {{end}}

@@ -10,6 +10,6 @@ func HandleSignUp(c echo.Context) error {
 	return c.Render(http.StatusOK, "signup", "")
 }
 
-// func HandleMyPage(c echo.Context) error {
-// 	return c.Render(http.StatusOK, "mypage", "")
-// }
+func HandleMyPage(c echo.Context) error {
+	return c.Render(http.StatusOK, "mypage", "")
+}
