@@ -4,18 +4,18 @@ services:
   web:
     container_name: schedule
     build:
-      context: ./build/app
+      context: ./src
       dockerfile: Dockerfile
     tty: true
     ports:
       - 8080:8080
     env_file:
-      - ./build/db/.env
+      - ./src/mysql/.env
     depends_on:
       - db
     volumes:
       - type: bind
-        source: .
+        source: ./src/
         target: /go/app
     networks:
       - golang_app_network
@@ -23,20 +23,20 @@ services:
   db:
     container_name: db
     build:
-      context: ./build/db
+      context: ./src/mysql
       dockerfile: Dockerfile
     tty: true
     platform: linux/amd64
     ports:
       - 3306:3306
     env_file:
-      - ./build/db/.env
+      - ./src/mysql/.env
     volumes:
       - type: volume
         source: mysql_data
         target: /var/lib/mysql
       - type: bind
-        source: ./build/db/init
+        source: ./src/mysql/init
         target: /docker-entrypoint-initdb.d
     networks:
       - golang_app_network
