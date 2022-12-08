@@ -3,6 +3,7 @@ package route
 import (
 	"io"
 	"net/http"
+	"src/internal/handler"
 	"src/internal/models"
 	"text/template"
 
@@ -25,6 +26,8 @@ func InitRouting() *echo.Echo {
 	e.Pre(models.MethodOverride)
 	e.GET("/schedules", models.GetAllSchedules)
 	e.GET("/schedule/:id", models.GetOneSchedule)
+	e.GET("/signup", handler.HandleSignUp)
+	// e.GET("/mypage", handler.HandleMyPage)
 
 	return e
 }
@@ -38,8 +41,9 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 }
 
 func initTemplate(e *echo.Echo) {
-	templateList, err := template.New("t").ParseGlob("internal/public/views/*.html")
-	templateList.ParseGlob("internal/public/view/*.html")
+	templateList, err := template.New("t").ParseGlob("internal/public/auth/*.html")
+	templateList.ParseGlob("internal/public/schedule/*.html")
+	templateList.ParseGlob("internal/public/schedules/*.html")
 	t := &Template{
 		templates: template.Must(templateList, err),
 	}
