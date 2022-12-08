@@ -1,4 +1,6 @@
 # tmpを除外する（Airを採用しているため）
 */tmp*
 
+
 /src/mysql/.env
+
