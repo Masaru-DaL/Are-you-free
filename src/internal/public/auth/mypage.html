@@ -1,0 +1,45 @@
+{{define "mypage"}}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{index . "title"}}</title>
+</head>
+<body>
+    <h1>{{index . "title"}}</h1>
+    <div id="greet"></div>
+    <div>
+        <p><input type="button" name="button" class="btn" value="Logout"></p>
+    </div>
+</body>
+<script>
+    const btn = document.querySelector('.btn');
+    const token = getToken();
+    const url = 'restricted';
+    const headers = {'Authorization': `Bearer ${getToken()}`}
+    if (localStorage.getItem('token') === null) {
+        location.href = '/';
+    }
+    fetch(url, {headers}).then(response => {
+        if(response.ok) {
+            return response.json();
+        }
+        return [];
+    }).then(json => {
+        var greet = document.getElementById('greet');
+        greet.innerHTML = '<p>Hello ' + json.username +' !</p>';
+    })
+
+    btn.addEventListener('click', logout, false);
+
+    function getToken() {
+        return localStorage.getItem('token');
+    }
+    function logout() {
+        localStorage.removeItem('token');
+        location.href = '/';
+    }
+</script>
+</html>
+{{end}}
