@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"src/internal/db"
 	"strconv"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo/v4"
@@ -24,14 +25,16 @@ func MethodOverride(next echo.HandlerFunc) echo.HandlerFunc {
 }
 
 type Schedule struct {
-	ID          int `json:"id"`
-	Year        int `json:"year"`
-	Month       int `json:"month"`
-	Day         int `Json:"day"`
-	StartHour   int `json:"starthour"`
-	StartMinute int `json:"startminute"`
-	EndHour     int `json:"endhour"`
-	EndMinute   int `json:"endminute"`
+	ID          int       `json:"id"`
+	Year        int       `json:"year"`
+	Month       int       `json:"month"`
+	Day         int       `Json:"day"`
+	StartHour   int       `json:"starthour"`
+	StartMinute int       `json:"startminute"`
+	EndHour     int       `json:"endhour"`
+	EndMinute   int       `json:"endminute"`
+	Created_at  time.Time `json:"created_at"`
+	Updated_at  time.Time `json:"updated_at"`
 }
 
 type Schedules struct {
@@ -45,12 +48,16 @@ func GetOneSchedule(c echo.Context) error {
 	schedule_id := c.Param("id")
 	strconv.Atoi(schedule_id)
 
-	sqlStatement := "SELECT id, Year, Month, Day, StartHour, StartMinute, EndHour, EndMinute FROM schedule WHERE id = ? LIMIT 1"
+	sqlStatement := "SELECT id, Year, Month, Day, StartHour, StartMinute, EndHour, EndMinute, Created_at, Updated_at FROM schedules WHERE id = ? LIMIT 1"
+
+	stmt, err := con.Prepare(sqlStatement)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer stmt.Close()
 
 	schedule := Schedule{}
-
-	rows := con.QueryRow(sqlStatement, schedule_id)
-	err2 := rows.Scan(&schedule.ID, &schedule.Year, &schedule.Month, &schedule.Day, &schedule.StartHour, &schedule.StartMinute, &schedule.EndHour, &schedule.EndMinute)
+	err2 := stmt.QueryRow(schedule_id).Scan(&schedule.ID, &schedule.Year, &schedule.Month, &schedule.Day, &schedule.StartHour, &schedule.StartMinute, &schedule.EndHour, &schedule.EndMinute, &schedule.Created_at, &schedule.Updated_at)
 	if err2 != nil {
 		fmt.Println(err2)
 	}
@@ -65,6 +72,8 @@ func GetOneSchedule(c echo.Context) error {
 		"startminute": schedule.StartMinute,
 		"endhour":     schedule.EndHour,
 		"endminute":   schedule.EndMinute,
+		"created_at":  schedule.Created_at,
+		"updated_at":  schedule.Updated_at,
 	})
 }
 
@@ -72,14 +81,13 @@ func GetOneSchedule(c echo.Context) error {
 func GetAllSchedules(c echo.Context) error {
 	con := db.CreateConnection()
 
-	sqlStatement := "SELECT ID, Year, Month, Day, StartHour, StartMinute, EndHour, EndMinute FROM schedule"
-
-	// sqlStatement := "SELECT ID, Year, Month, Day, StartHour, StartMinute, EndHour, EndMinute FROM schedule where id = ?"
+	sqlStatement := "SELECT ID, Year, Month, Day, StartHour, StartMinute, EndHour, EndMinute, Created_at, Updated_at FROM schedules"
 
 	stmt, err := con.Prepare(sqlStatement)
 	if err != nil {
 		fmt.Println(err)
 	}
+	defer stmt.Close()
 
 	// rows, err := stmt.Query(1)
 	rows, err := stmt.Query()
