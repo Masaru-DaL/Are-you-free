@@ -13,13 +13,17 @@ import (
 func InitRouting() *echo.Echo {
 	e := echo.New()
 
-	// html/template非対応
+	/* html/template非対応 */
+	// schedulesを操作する
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusCreated, "Hello, World!!")
 	})
-	e.POST("/create", models.PostSchedule)
+	e.POST("/create/schedule", models.PostSchedule)
 	e.PUT("/put", models.PutSchedule)
 	e.DELETE("/schedule/delete/:id", models.DeleteSchedule)
+
+	// usersを操作する
+	e.POST("/create/user", models.CreateUser)
 
 	// html/template対応
 	initTemplate(e)

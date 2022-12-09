@@ -41,5 +41,5 @@ func CreateUser(c echo.Context) error {
 	}
 	fmt.Println(result.LastInsertId())
 
-	return c.JSON(http.StatusCreated, user.ID)
+	return c.JSON(http.StatusCreated, user.)
 }
