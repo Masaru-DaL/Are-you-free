@@ -23,7 +23,6 @@ func InitRouting() *echo.Echo {
 
 	// html/template対応
 	initTemplate(e)
-	e.Pre(models.MethodOverride)
 	e.GET("/schedules", models.GetAllSchedules)
 	e.GET("/schedule/:id", models.GetOneSchedule)
 	e.GET("/signup", handler.HandleSignUp)
@@ -48,5 +47,18 @@ func initTemplate(e *echo.Echo) {
 		templates: template.Must(templateList, err),
 	}
 	e.Renderer = t
-	e.Pre(models.MethodOverride)
+	e.Pre(MethodOverride)
+}
+
+/* PUTやDELETEにも対応させるメソッド */
+func MethodOverride(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		if c.Request().Method == "POST" {
+			method := c.Request().PostFormValue("_method")
+			if method == "PUT" || method == "PATCH" || method == "DELETE" {
+				c.Request().Method = method
+			}
+		}
+		return next(c)
+	}
 }

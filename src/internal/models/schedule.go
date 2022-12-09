@@ -11,19 +11,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-/* PUTやDELETEにも対応させるメソッド */
-func MethodOverride(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		if c.Request().Method == "POST" {
-			method := c.Request().PostFormValue("_method")
-			if method == "PUT" || method == "PATCH" || method == "DELETE" {
-				c.Request().Method = method
-			}
-		}
-		return next(c)
-	}
-}
-
 type Schedule struct {
 	ID          int       `json:"id"`
 	Year        int       `json:"year"`
@@ -117,7 +104,7 @@ func PostSchedule(c echo.Context) error {
 		return err
 	}
 
-	sqlStatement := "INSERT INTO schedule(id, year, month, day, starthour, startminute, endhour, endminute) VALUES(?, ?, ?, ?, ?, ?, ?, ?)"
+	sqlStatement := "INSERT INTO schedules(year, month, day, starthour, startminute, endhour, endminute) VALUES(?, ?, ?, ?, ?, ?, ?, ?)"
 	stmt, err := con.Prepare(sqlStatement)
 
 	if err != nil {
@@ -125,7 +112,7 @@ func PostSchedule(c echo.Context) error {
 	}
 	defer stmt.Close()
 
-	result, err2 := stmt.Exec(sch.ID, sch.Year, sch.Month, sch.Day, sch.StartHour, sch.StartMinute, sch.EndHour, sch.EndMinute)
+	result, err2 := stmt.Exec(sch.Year, sch.Month, sch.Day, sch.StartHour, sch.StartMinute, sch.EndHour, sch.EndMinute)
 
 	// エラーが発生したら終了する
 	if err2 != nil {
@@ -143,7 +130,7 @@ func PutSchedule(c echo.Context) error {
 		return err
 	}
 
-	sqlStatement := "UPDATE schedule SET year=?, month=?, day=?, starthour=?, startminute=?, endhour=?, endminute=? WHERE id=?"
+	sqlStatement := "UPDATE schedules SET year=?, month=?, day=?, starthour=?, startminute=?, endhour=?, endminute=? WHERE id=?"
 	stmt, err := con.Prepare(sqlStatement)
 
 	if err != nil {
@@ -166,7 +153,7 @@ func PutSchedule(c echo.Context) error {
 func DeleteSchedule(c echo.Context) error {
 	con := db.CreateConnection()
 	request_id := c.Param("id")
-	sqlStatement := "DELETE FROM schedule where id = ?"
+	sqlStatement := "DELETE FROM schedules where id = ?"
 	stmt, err := con.Prepare(sqlStatement)
 
 	if err != nil {
