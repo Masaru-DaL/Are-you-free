@@ -4,8 +4,8 @@ create table if not exists users(
     name CHAR(20) NOT NULL,
     password CHAR(20) NOT NULL,
     is_admin BOOLEAN NOT NULL DEFAULT 0,
-    created_at DATETIME DEFAULT current_timestamp,
-    updated_at DATETIME DEFAULT current_timestamp
+    created_at datetime  default current_timestamp,
+    updated_at timestamp default current_timestamp on update current_timestamp
 );
 
 -- schedules table
@@ -18,8 +18,8 @@ create table if not exists schedules(
     startminute INTEGER NOT NULL,
     endhour INTEGER NOT NULL,
     endminute INTEGER NOT NULL,
-    created_at DATETIME DEFAULT current_timestamp,
-    updated_at DATETIME DEFAULT current_timestamp
+    created_at datetime  default current_timestamp,
+    updated_at timestamp default current_timestamp on update current_timestamp
 );
 
 insert into schedules (year, month, day, starthour, startminute, endhour, endminute) values (2022, 11, 18, 18, 00, 24, 00);

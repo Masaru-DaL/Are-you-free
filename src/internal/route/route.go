@@ -3,6 +3,7 @@ package route
 import (
 	"io"
 	"net/http"
+	"src/internal/handler"
 	"src/internal/models"
 	"text/template"
 
@@ -12,19 +13,24 @@ import (
 func InitRouting() *echo.Echo {
 	e := echo.New()
 
-	// html/template非対応
+	/* html/template非対応 */
+	// schedulesを操作する
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusCreated, "Hello, World!!")
 	})
-	e.POST("/create", models.PostSchedule)
+	e.POST("/create/schedule", models.PostSchedule)
 	e.PUT("/put", models.PutSchedule)
 	e.DELETE("/schedule/delete/:id", models.DeleteSchedule)
 
+	// usersを操作する
+	e.POST("/create/user", models.CreateUser)
+
 	// html/template対応
 	initTemplate(e)
-	e.Pre(models.MethodOverride)
 	e.GET("/schedules", models.GetAllSchedules)
 	e.GET("/schedule/:id", models.GetOneSchedule)
+	e.GET("/signup", handler.HandleSignUp)
+	e.GET("/mypage", handler.HandleMyPage)
 
 	return e
 }
@@ -38,11 +44,25 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 }
 
 func initTemplate(e *echo.Echo) {
-	templateList, err := template.New("t").ParseGlob("internal/public/views/*.html")
-	templateList.ParseGlob("internal/public/view/*.html")
+	templateList, err := template.New("t").ParseGlob("internal/public/auth/*.html")
+	templateList.ParseGlob("internal/public/schedule/*.html")
+	templateList.ParseGlob("internal/public/schedules/*.html")
 	t := &Template{
 		templates: template.Must(templateList, err),
 	}
 	e.Renderer = t
-	e.Pre(models.MethodOverride)
+	e.Pre(MethodOverride)
+}
+
+/* PUTやDELETEにも対応させるメソッド */
+func MethodOverride(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		if c.Request().Method == "POST" {
+			method := c.Request().PostFormValue("_method")
+			if method == "PUT" || method == "PATCH" || method == "DELETE" {
+				c.Request().Method = method
+			}
+		}
+		return next(c)
+	}
 }
