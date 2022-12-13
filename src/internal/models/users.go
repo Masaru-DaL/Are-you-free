@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"src/internal/auth"
 	"src/internal/db"
 	"strconv"
 	"time"
@@ -23,33 +24,6 @@ type User struct {
 
 type Users struct {
 	Users []User `json:"users"`
-}
-
-/* POSTリクエスト */
-func CreateUser(c echo.Context) error {
-	con := db.CreateConnection()
-
-	user := new(User)
-	if err := c.Bind(user); err != nil {
-		return err
-	}
-
-	sqlStatement := "INSERT INTO users(name, password) VALUES(?, ?)"
-	stmt, err := con.Prepare(sqlStatement)
-
-	if err != nil {
-		fmt.Print(err.Error())
-	}
-	defer stmt.Close()
-
-	result, err2 := stmt.Exec(user.Name, user.Password)
-
-	if err2 != nil {
-		panic(err2)
-	}
-	fmt.Println(result.LastInsertId())
-
-	return c.JSON(http.StatusCreated, user.ID)
 }
 
 /* ユーザのサインイン機能 */
