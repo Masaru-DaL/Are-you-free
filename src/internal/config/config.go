@@ -3,6 +3,14 @@ package config
 import "github.com/jinzhu/configor"
 
 var Config struct {
+	DB struct {
+		SQLDriver     string `default:"mysql"`
+		Database      string `default:"are-you-free"`
+		User          string `default:"test_user"`
+		Password      string `default:""`
+		Root_password string `default:""`
+		Path          string `default:""`
+	}
 	AUTH struct {
 		JWTSecretKey string `default:""`
 	}

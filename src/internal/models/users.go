@@ -126,7 +126,7 @@ func GetUsers(c echo.Context) error {
 		}
 		users.Users = append(users.Users, user)
 	}
-	return c.JSON(http.StatusOK, users.Users)
+	return c.JSON(http.StatusOK, users)
 }
 
 /* ユーザの新規作成 */

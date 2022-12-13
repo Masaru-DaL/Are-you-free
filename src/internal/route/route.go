@@ -30,7 +30,7 @@ func InitRouting() *echo.Echo {
 	e.PUT("/user/update", models.UpdateUser)
 
 	admin := e.Group("/admin")
-	admin.GET("/user", models.GetUser)
+	admin.GET("/user/:id", models.GetUser)
 	admin.GET("/users", models.GetUsers)
 	admin.PUT("/user/update", models.UpdateUserByAdmin)
 	admin.DELETE("/user/delete", models.DeleteUserByAdmin)
