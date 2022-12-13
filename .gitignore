@@ -3,4 +3,4 @@
 
 
 /src/mysql/.env
-
+/src/internal/config/config.yaml
