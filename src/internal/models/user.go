@@ -21,6 +21,7 @@ type User struct {
 /* POSTリクエスト */
 func CreateUser(c echo.Context) error {
 	con := db.CreateConnection()
+
 	user := new(User)
 	if err := c.Bind(user); err != nil {
 		return err
@@ -41,5 +42,5 @@ func CreateUser(c echo.Context) error {
 	}
 	fmt.Println(result.LastInsertId())
 
-	return c.JSON(http.StatusCreated, user.)
+	return c.JSON(http.StatusCreated, user.ID)
 }

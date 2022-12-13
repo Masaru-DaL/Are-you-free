@@ -3,6 +3,7 @@ package route
 import (
 	"io"
 	"net/http"
+	"src/internal/config"
 	"src/internal/handler"
 	"src/internal/models"
 	"text/template"
@@ -11,6 +12,7 @@ import (
 )
 
 func InitRouting() *echo.Echo {
+	config.LoadConfigForYaml()
 	e := echo.New()
 
 	/* html/template非対応 */

@@ -1,0 +1,2 @@
+auth:
+  jwtSecretKey: some secret key of jwt
