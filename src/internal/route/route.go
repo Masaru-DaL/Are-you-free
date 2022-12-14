@@ -3,6 +3,7 @@ package route
 import (
 	"io"
 	"net/http"
+	"src/internal/config"
 	"src/internal/handler"
 	"src/internal/models"
 	"text/template"
@@ -11,6 +12,7 @@ import (
 )
 
 func InitRouting() *echo.Echo {
+	config.LoadConfigForYaml()
 	e := echo.New()
 
 	/* html/template非対応 */
@@ -23,7 +25,15 @@ func InitRouting() *echo.Echo {
 	e.DELETE("/schedule/delete/:id", models.DeleteSchedule)
 
 	// usersを操作する
-	e.POST("/create/user", models.CreateUser)
+	e.POST("/sign_in", models.SignIn)
+	e.POST("/sign_up", models.SignUp)
+	e.PUT("/user/update", models.UpdateUser)
+
+	admin := e.Group("/admin")
+	admin.GET("/user/:id", models.GetUser)
+	admin.GET("/users", models.GetUsers)
+	admin.PUT("/user/update", models.UpdateUserByAdmin)
+	admin.DELETE("/user/delete", models.DeleteUserByAdmin)
 
 	// html/template対応
 	initTemplate(e)
