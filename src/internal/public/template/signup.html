@@ -1,0 +1,28 @@
+{{define "signup"}}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignUp Page</title>
+</head>
+<body>
+    <h1>SignUp Page</h1>
+    <h2>Sign Up</h2>
+    <form method="POST" action="/signup">
+        <div>
+            <label for="name">Name:</label>
+            <input type="text" name="name">
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" name="password">
+        </div>
+        <button>
+            SignUp
+        </button>
+    </form>
+
+</body>
+</html>
+{{end}}

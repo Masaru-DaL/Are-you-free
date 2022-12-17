@@ -12,7 +12,10 @@ var Config struct {
 		Path          string `default:""`
 	}
 	AUTH struct {
-		JWTSecretKey string `default:""`
+		AccessTokenCookieName  string `default:"atcn"`
+		RefreshTokenCookieName string `default:"rtcn"`
+		JWTSecretKey           string `default:""`
+		JWTRefreshSecretKey    string `default:""`
 	}
 }
 

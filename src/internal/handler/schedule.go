@@ -1,32 +1,15 @@
-package models
+package handler
 
 import (
 	"fmt"
 	"net/http"
 	"src/internal/db"
+	"src/internal/models"
 	"strconv"
-	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo/v4"
 )
-
-type Schedule struct {
-	ID          int       `json:"id"`
-	Year        int       `json:"year"`
-	Month       int       `json:"month"`
-	Day         int       `Json:"day"`
-	StartHour   int       `json:"starthour"`
-	StartMinute int       `json:"startminute"`
-	EndHour     int       `json:"endhour"`
-	EndMinute   int       `json:"endminute"`
-	Created_at  time.Time `json:"created_at"`
-	Updated_at  time.Time `json:"updated_at"`
-}
-
-type Schedules struct {
-	Schedules []Schedule `json:"Schedule"`
-}
 
 /* 1件取得の関数 */
 func GetOneSchedule(c echo.Context) error {
@@ -43,7 +26,7 @@ func GetOneSchedule(c echo.Context) error {
 	}
 	defer stmt.Close()
 
-	schedule := Schedule{}
+	schedule := models.Schedule{}
 	err2 := stmt.QueryRow(schedule_id).Scan(&schedule.ID, &schedule.Year, &schedule.Month, &schedule.Day, &schedule.StartHour, &schedule.StartMinute, &schedule.EndHour, &schedule.EndMinute, &schedule.Created_at, &schedule.Updated_at)
 	if err2 != nil {
 		fmt.Println(err2)
@@ -83,9 +66,9 @@ func GetAllSchedules(c echo.Context) error {
 	}
 	defer rows.Close()
 
-	schedules := Schedules{}
+	schedules := models.Schedules{}
 	for rows.Next() {
-		schedule := Schedule{}
+		schedule := models.Schedule{}
 		err := rows.Scan(&schedule.ID, &schedule.Year, &schedule.Month, &schedule.Day, &schedule.StartHour, &schedule.StartMinute, &schedule.EndHour, &schedule.EndMinute)
 
 		if err != nil {
@@ -99,7 +82,7 @@ func GetAllSchedules(c echo.Context) error {
 /* POSTリクエスト */
 func PostSchedule(c echo.Context) error {
 	con := db.CreateConnection()
-	sch := new(Schedule)
+	sch := new(models.Schedule)
 	if err := c.Bind(sch); err != nil {
 		return err
 	}
@@ -125,7 +108,7 @@ func PostSchedule(c echo.Context) error {
 
 func PutSchedule(c echo.Context) error {
 	con := db.CreateConnection()
-	sch := new(Schedule)
+	sch := new(models.Schedule)
 	if err := c.Bind(sch); err != nil {
 		return err
 	}
