@@ -3,16 +3,14 @@ package route
 import (
 	"io"
 	"net/http"
-	"src/internal/config"
+	"src/internal/auth"
 	"src/internal/handler"
-	"src/internal/models"
 	"text/template"
 
 	"github.com/labstack/echo/v4"
 )
 
 func InitRouting() *echo.Echo {
-	config.LoadConfigForYaml()
 	e := echo.New()
 
 	/* html/template非対応 */
@@ -20,27 +18,31 @@ func InitRouting() *echo.Echo {
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusCreated, "Hello, World!!")
 	})
-	e.POST("/create/schedule", models.PostSchedule)
-	e.PUT("/put", models.PutSchedule)
-	e.DELETE("/schedule/delete/:id", models.DeleteSchedule)
+	e.POST("/create/schedule", handler.PostSchedule)
+	e.PUT("/put", handler.PutSchedule)
+	e.DELETE("/schedule/delete/:id", handler.DeleteSchedule)
 
 	// usersを操作する
-	e.POST("/sign_in", models.SignIn)
-	e.POST("/sign_up", models.SignUp)
-	e.PUT("/user/update", models.UpdateUser)
+	e.POST("/login", handler.SignIn)
+	e.POST("/signup", handler.SignUp)
+	e.PUT("/user/update", handler.UpdateUser)
 
 	admin := e.Group("/admin")
-	admin.GET("/user/:id", models.GetUser)
-	admin.GET("/users", models.GetUsers)
-	admin.PUT("/user/update", models.UpdateUserByAdmin)
-	admin.DELETE("/user/delete", models.DeleteUserByAdmin)
+	admin.GET("/user/:id", handler.GetUser)
+	admin.GET("/users", handler.GetUsers)
+	admin.PUT("/user/update", handler.UpdateUserByAdmin)
+	admin.DELETE("/user/delete", handler.DeleteUserByAdmin)
 
 	// html/template対応
 	initTemplate(e)
-	e.GET("/schedules", models.GetAllSchedules)
-	e.GET("/schedule/:id", models.GetOneSchedule)
-	e.GET("/signup", handler.HandleSignUp)
-	e.GET("/mypage", handler.HandleMyPage)
+	e.GET("/signup", handler.SignUpTemplate)
+	e.GET("/login", handler.LoginTemplate)
+
+	e.GET("/schedule/:id", handler.GetOneSchedule)
+
+	authGroup := e.Group("/auth")
+	authGroup.Use(auth.CheckCookieMiddleware)
+	authGroup.GET("/schedules", handler.GetAllSchedules)
 
 	return e
 }
@@ -54,25 +56,11 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 }
 
 func initTemplate(e *echo.Echo) {
-	templateList, err := template.New("t").ParseGlob("internal/public/auth/*.html")
-	templateList.ParseGlob("internal/public/schedule/*.html")
-	templateList.ParseGlob("internal/public/schedules/*.html")
+	templateList, err := template.New("t").ParseGlob("internal/public/template/*.html")
+	// templateList.ParseGlob("internal/public/schedule/*.html")
 	t := &Template{
 		templates: template.Must(templateList, err),
 	}
 	e.Renderer = t
-	e.Pre(MethodOverride)
-}
-
-/* PUTやDELETEにも対応させるメソッド */
-func MethodOverride(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		if c.Request().Method == "POST" {
-			method := c.Request().PostFormValue("_method")
-			if method == "PUT" || method == "PATCH" || method == "DELETE" {
-				c.Request().Method = method
-			}
-		}
-		return next(c)
-	}
+	e.Pre(handler.MethodOverride)
 }

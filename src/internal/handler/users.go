@@ -1,77 +1,14 @@
-package models
+package handler
 
 import (
-	"database/sql"
 	"fmt"
-	"log"
 	"net/http"
-	"src/internal/auth"
 	"src/internal/db"
+	"src/internal/models"
 	"strconv"
-	"time"
 
 	"github.com/labstack/echo/v4"
 )
-
-type User struct {
-	ID         int       `json:"id"`
-	Name       string    `json:"name"`
-	Password   string    `json:"password"`
-	Is_admin   bool      `json:"is_admin"`
-	Created_at time.Time `json:"created_at"`
-	Updated_at time.Time `json:"updated_at"`
-}
-
-type Users struct {
-	Users []User `json:"users"`
-}
-
-/* ユーザのサインイン機能 */
-func SignIn(c echo.Context) error {
-	db := db.CreateConnection()
-
-	tmpUser := new(User)
-	if err := c.Bind(tmpUser); err != nil {
-		return err
-	}
-
-	// ユーザ名、パスワードが正しいか確認する => トークンを作成して渡す
-	sqlStatement := "SELECT name, password, id FROM users WHERE name = ? AND password = ?"
-
-	rows, err := db.Query(sqlStatement, tmpUser.Name, tmpUser.Password)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer rows.Close()
-
-	var username string
-	var password string
-	var id int
-	for rows.Next() {
-		err := rows.Scan(&username, &password, &id)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-
-	if username == "" || password == "" {
-		return c.JSON(http.StatusUnprocessableEntity, "The username and password you have entered is not correct.")
-	} else {
-		// パスワードをチェックする
-		if password == tmpUser.Password {
-			token := auth.GenerateToken(id)
-
-			http.SetCookie(c.Response().Writer, &http.Cookie{
-				Name:  "token",
-				Value: token,
-			})
-			return c.JSON(http.StatusOK, token)
-		} else {
-			return c.JSON(http.StatusUnprocessableEntity, "The username and password you have entered is not correct.")
-		}
-	}
-}
 
 /* user情報を1件取得する */
 func GetUser(c echo.Context) error {
@@ -88,7 +25,7 @@ func GetUser(c echo.Context) error {
 	}
 	defer stmt.Close()
 
-	user := User{}
+	user := models.User{}
 	err2 := stmt.QueryRow(user_id).Scan(&user.ID, &user.Name, &user.Password, &user.Is_admin, &user.Created_at, &user.Updated_at)
 	if err2 != nil {
 		fmt.Println(err2)
@@ -116,9 +53,9 @@ func GetUsers(c echo.Context) error {
 	}
 	defer rows.Close()
 
-	users := Users{}
+	users := models.Users{}
 	for rows.Next() {
-		user := User{}
+		user := models.User{}
 		err := rows.Scan(&user.ID, &user.Name, &user.Password, &user.Is_admin, &user.Created_at, &user.Updated_at)
 
 		if err != nil {
@@ -129,42 +66,11 @@ func GetUsers(c echo.Context) error {
 	return c.JSON(http.StatusOK, users)
 }
 
-/* ユーザの新規作成 */
-func SignUp(c echo.Context) error {
-	db := db.CreateConnection()
-
-	tmpUser := new(User)
-	if err := c.Bind(tmpUser); err != nil {
-		return err
-	}
-
-	// ユーザ名をチェックし、存在した場合はエラー
-	// 存在しなかったらユーザの新規作成を行う
-	sqlStatement := "SELECT name, password FROM users WHERE name = ? AND password = ?"
-	selectExecuteError := db.QueryRow(sqlStatement, tmpUser.Name, tmpUser.Password).Scan(&tmpUser.Name, &tmpUser.Password)
-	switch {
-	case selectExecuteError == sql.ErrNoRows:
-		// ユーザを作成する
-		sqlStatement := "INSERT INTO users(name, password) values(?, ?)"
-		_, err := db.Exec(sqlStatement, tmpUser.Name, tmpUser.Password)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-		return c.JSON(http.StatusCreated, tmpUser)
-	case selectExecuteError != nil:
-		log.Fatal(selectExecuteError)
-		// log.Fatalf("query error: %v\n, err")
-	}
-
-	return c.JSON(http.StatusUnprocessableEntity, "The username you have entered already exists")
-}
-
 /* userの名前、パスワードを更新する(自身の持つIDが分かる必要がある) */
 func UpdateUser(c echo.Context) error {
 	db := db.CreateConnection()
 
-	user := new(User)
+	user := new(models.User)
 	if err := c.Bind(user); err != nil {
 		return err
 	}
@@ -193,7 +99,7 @@ func UpdateUser(c echo.Context) error {
 func UpdateUserByAdmin(c echo.Context) error {
 	db := db.CreateConnection()
 
-	user := new(User)
+	user := new(models.User)
 	if err := c.Bind(user); err != nil {
 		return err
 	}
