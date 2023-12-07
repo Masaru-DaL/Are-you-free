@@ -1,5 +1,9 @@
 # Are you free?
 
+## システム構成図
+
+![](Are-you-free-configuration.drawio.png)
+
 ## ディレクトリ構造
 
 * MVC
